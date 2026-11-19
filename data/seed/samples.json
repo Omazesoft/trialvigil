@@ -1,0 +1,41 @@
+[
+  {
+    "expectedSeriousness": "serious",
+    "expectedValid": true,
+    "id": "sample-1",
+    "label": "Serious \u2014 anaphylaxis after amoxicillin (complete, valid)",
+    "product": "Amoxicillin",
+    "reporter": "Dr. Priya Nair",
+    "synthetic": true,
+    "text": "SYNTHETIC FAKE REPORT \u2014 no real patient. Patient SK, a 58-year-old female, was prescribed Amoxicillin 500 mg three times daily starting on 2026-11-08 for a chest infection. On 2026-11-10 she developed severe anaphylaxis with difficulty breathing and a widespread rash, and was hospitalised overnight for observation. The report was submitted by Dr. Priya Nair, GP, on 2026-11-11. No other medicines were reported.",
+    "title": "Serious \u2014 anaphylaxis after amoxicillin (complete, valid)",
+    "sourceText": "SYNTHETIC FAKE REPORT \u2014 no real patient. Patient SK, a 58-year-old female, was prescribed Amoxicillin 500 mg three times daily starting on 2026-11-08 for a chest infection. On 2026-11-10 she developed severe anaphylaxis with difficulty breathing and a widespread rash, and was hospitalised overnight for observation. The report was submitted by Dr. Priya Nair, GP, on 2026-11-11. No other medicines were reported.",
+    "description": "Serious \u2014 anaphylaxis after amoxicillin (complete, valid)"
+  },
+  {
+    "expectedSeriousness": "non-serious candidate",
+    "expectedValid": true,
+    "id": "sample-2",
+    "label": "Non-serious \u2014 nausea on metformin (complete, valid)",
+    "product": "Metformin",
+    "reporter": "Pharmacist Ravi Menon",
+    "synthetic": true,
+    "text": "SYNTHETIC FAKE REPORT \u2014 no real patient. Patient JT, a 34-year-old male, started Metformin 500 mg twice daily on 2026-10-20 for type 2 diabetes. On 2026-10-22 he experienced nausea and mild stomach upset after taking the morning dose. He did not need hospital treatment and the symptoms settled by 2026-10-24. Reported by pharmacist Ravi Menon on 2026-10-25.",
+    "title": "Non-serious \u2014 nausea on metformin (complete, valid)",
+    "sourceText": "SYNTHETIC FAKE REPORT \u2014 no real patient. Patient JT, a 34-year-old male, started Metformin 500 mg twice daily on 2026-10-20 for type 2 diabetes. On 2026-10-22 he experienced nausea and mild stomach upset after taking the morning dose. He did not need hospital treatment and the symptoms settled by 2026-10-24. Reported by pharmacist Ravi Menon on 2026-10-25.",
+    "description": "Non-serious \u2014 nausea on metformin (complete, valid)"
+  },
+  {
+    "expectedSeriousness": "non-serious candidate",
+    "expectedValid": false,
+    "id": "sample-3",
+    "label": "Incomplete \u2014 missing reporter and suspect drug (invalid, follow-ups required)",
+    "product": "",
+    "reporter": "",
+    "synthetic": true,
+    "text": "SYNTHETIC FAKE REPORT \u2014 no real patient. A 41-year-old female patient developed a severe skin rash and itching on 2026-11-05, two days after she started a new tablet prescribed for blood pressure. She stopped the tablet herself. The person who sent this message did not give their name or contact details, and the name of the tablet was not included in the message.",
+    "title": "Incomplete \u2014 missing reporter and suspect drug (invalid, follow-ups required)",
+    "sourceText": "SYNTHETIC FAKE REPORT \u2014 no real patient. A 41-year-old female patient developed a severe skin rash and itching on 2026-11-05, two days after she started a new tablet prescribed for blood pressure. She stopped the tablet herself. The person who sent this message did not give their name or contact details, and the name of the tablet was not included in the message.",
+    "description": "Incomplete \u2014 missing reporter and suspect drug (invalid, follow-ups required)"
+  }
+]

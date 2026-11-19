@@ -1,0 +1,19 @@
+{
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "name": "@trialvigil/pv-pack",
+  "private": true,
+  "scripts": {
+    "build": "tsc -b tsconfig.json"
+  },
+  "types": "dist/index.d.ts",
+  "version": "0.1.0"
+}

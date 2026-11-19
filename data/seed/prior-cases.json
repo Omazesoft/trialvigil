@@ -1,0 +1,1 @@
+[{"drug":"Amoxicillin","event":"anaphylaxis","id":"prior-001","onsetDate":"2026-10-02","patientInitials":"SK","source":"SYNTHETIC seeded prior case — FAKE, for duplicate-check demo only"},{"drug":"Metformin","event":"nausea","id":"prior-002","onsetDate":"2026-09-14","patientInitials":"AB","source":"SYNTHETIC seeded prior case — FAKE, for duplicate-check demo only"}]

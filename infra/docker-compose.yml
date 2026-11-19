@@ -1,0 +1,91 @@
+# TrialVigil — local mode (docker compose)
+#
+# Usage:
+#   cp infra/.env.example infra/.env   # optional; defaults below work as-is
+#   docker compose -f infra/docker-compose.yml up --build
+#   # with local Ollama (optional):
+#   docker compose -f infra/docker-compose.yml --profile ollama up --build
+#
+# Console: http://localhost:3000   Harness service: http://localhost:3001
+#
+# NOTE: Ollama is OPTIONAL. The demo works without it — the harness runs
+# with the deterministic extractor by default (see docs/decisions.md ADR-04).
+# Ollama only adds local LLM inference when you want it.
+
+services:
+  harness:
+    build:
+      context: ../..
+      dockerfile: apps/harness-service/Dockerfile
+    image: trialvigil-harness:local
+    container_name: trialvigil-harness
+    ports:
+      - "${HARNESS_PORT:-3001}:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DATA_DIR=/data
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://ollama:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.1:8b}
+    volumes:
+      - pharma-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  console:
+    build:
+      context: ../..
+      dockerfile: apps/console/Dockerfile
+    image: trialvigil-console:local
+    container_name: trialvigil-console
+    ports:
+      - "${CONSOLE_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - HARNESS_URL=http://harness:3001
+    volumes:
+      - pharma-data:/data
+    depends_on:
+      harness:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  # Optional local LLM. Start with: docker compose --profile ollama up
+  # The harness falls back to the deterministic extractor when Ollama is
+  # absent or unreachable, so the demo never depends on this service.
+  ollama:
+    profiles:
+      - ollama
+    image: ollama/ollama:latest
+    container_name: trialvigil-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  # Shared data volume: local JSON store + audit log, mounted by both apps.
+  # Maps to DATA_DIR inside the containers. Back it up before upgrades.
+  pharma-data:
+    name: trialvigil-data
+  ollama-models:
+    name: trialvigil-ollama-models

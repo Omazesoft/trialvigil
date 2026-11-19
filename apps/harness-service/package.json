@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "@trialvigil/harness-adapter": "0.1.0",
+    "@trialvigil/pv-pack": "0.1.0",
+    "@trialvigil/shared": "0.1.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "name": "@trialvigil/harness-service",
+  "private": true,
+  "scripts": {
+    "build": "tsc -b tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "types": "dist/index.d.ts",
+  "version": "0.1.0"
+}
