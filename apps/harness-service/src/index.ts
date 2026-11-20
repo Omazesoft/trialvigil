@@ -242,7 +242,33 @@ async function createPvRun(sourceText: string, product?: string, reporter?: stri
   runs.unshift(run);
   saveRuns(runs);
   audit(run.id, "system", "run.created", `PV intake run created (product=${product ?? "—"}).`);
-  await adapter.startRun({ workflow: "pv-intake", sourceText });
+  try {
+    const started = await adapter.startRun({ workflow: "pv-intake", sourceText });
+    if (started.sdk) {
+      const sdk = started.sdk;
+      run.steps.push({
+        name: "openworker_sdk_session",
+        status: "done",
+        detail: `SDK loop ${sdk.status}; tools called: ${sdk.toolCalls.join(", ") || "none"}; approval interruptions answered: ${sdk.interruptions.length}`,
+        at: nowIso(),
+      });
+      run.toolCalls.push({
+        tool: "openworker_sdk_session",
+        args: { adapterMode: adapter.mode },
+        result: sdk,
+        at: nowIso(),
+      });
+      persist(run);
+    }
+  } catch (err) {
+    // The SDK session failed at runtime (e.g. provider error). Record it
+    // and continue with the deterministic pass — the local loop is the
+    // fallback, and the human approval gate still applies.
+    const message = err instanceof Error ? err.message : String(err);
+    run.steps.push({ name: "openworker_sdk_session", status: "failed", detail: message, at: nowIso() });
+    persist(run);
+    audit(run.id, "system", "run.sdk_failed", `OpenWorker SDK session failed (${message}); continuing with deterministic extraction.`);
+  }
   await executeRun(run);
   return run;
 }
@@ -266,7 +292,10 @@ const server = http.createServer((req, res) => {
 
       // GET /health
       if (method === "GET" && path === "/health") {
-        sendJson(res, 200, { ok: true });
+        sendJson(res, 200, {
+          ok: true,
+          adapter: { mode: adapter.mode, sdkUnavailableReason: adapter.sdkUnavailableReason },
+        });
         return;
       }
 

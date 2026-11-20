@@ -116,13 +116,21 @@ The adapter (`packages/harness-adapter/`) exposes one interface
 - **`local` (default)** — in-process loop, no LLM, no keys, no network.
   The loop never approves itself; it always stops at the approval gate.
 - **`openworker-sdk` (opt-in)** — set `OPENWORKER_ENABLED=1`,
-  `OPENAI_API_KEY`, `OPENWORKER_MODEL`. Wraps
-  `@openworkerai/harness-sdk` 0.1.0-beta.5. See
+  an API key, and `OPENWORKER_MODEL`. Wraps
+  `@openworkerai/harness-sdk` 0.1.0-beta.5. The provider is
+  configurable: OpenAI's Responses API by default, or any
+  OpenAI-compatible chat-completions endpoint — including NVIDIA NIM's
+  free tier (`OPENWORKER_API=chat-completions`,
+  `OPENWORKER_MODEL_URL=https://integrate.api.nvidia.com/v1`,
+  `NVIDIA_API_KEY`, model `mistralai/mistral-large-4-1t-a52b`),
+  validated live 2026-11-19. See
   `packages/harness-adapter/README.md` for exactly what the SDK provides
-  (LLM-gated agent loop, sessions, approval interruptions) and what it does
-  not (no keyless mode, no PV logic, no approval REST API, no run/audit
-  store). If the SDK cannot start, the adapter falls back to `local` and
-  says so.
+  (LLM-driven agent loop with the PV tools registered, sessions,
+  approval interruptions answered in-process for read-only tool calls)
+  and what it does not (no keyless mode, no PV logic of its own, no
+  approval REST API — the draft approval stays at the service's human
+  gate, no run/audit store). If the SDK cannot start, the adapter falls
+  back to `local` and says so.
 - **`ollama-assisted` (opt-in)** — set `OLLAMA_HOST` + `OLLAMA_MODEL`.
   Still the local loop, plus an optional Ollama call. Default OFF; the demo
   works with no Ollama.
