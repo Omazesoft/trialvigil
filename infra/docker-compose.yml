@@ -15,7 +15,10 @@
 services:
   harness:
     build:
-      context: ../..
+      # Context is the repo root (pharma-harness/), not the workspace above
+      # it: ../.. pointed at the wrong directory and the Dockerfiles' COPY
+      # paths would not resolve.
+      context: ..
       dockerfile: apps/harness-service/Dockerfile
     image: trialvigil-harness:local
     container_name: trialvigil-harness
@@ -24,11 +27,17 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3001
-      - DATA_DIR=/data
+      # The service binds 127.0.0.1 by default; in a container it must
+      # listen on 0.0.0.0 or the mapped port cannot reach it.
+      - HOST=0.0.0.0
       - OLLAMA_HOST=${OLLAMA_HOST:-http://ollama:11434}
       - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.1:8b}
     volumes:
-      - pharma-data:/data
+      # The file store resolves data/ relative to the working directory
+      # (/app in the image), so the volume mounts at /app/data. The old
+      # /data mount (and DATA_DIR=/data) was ignored by the code, so runs
+      # and the audit log would have lived in the container, not the volume.
+      - pharma-data:/app/data
     healthcheck:
       test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
       interval: 15s
@@ -39,7 +48,7 @@ services:
 
   console:
     build:
-      context: ../..
+      context: ..
       dockerfile: apps/console/Dockerfile
     image: trialvigil-console:local
     container_name: trialvigil-console
@@ -49,8 +58,8 @@ services:
       - NODE_ENV=development
       - PORT=3000
       - HARNESS_URL=http://harness:3001
-    volumes:
-      - pharma-data:/data
+    # No data volume: the console is a static UI + proxy and keeps no data.
+    # (The old pharma-data:/data mount served nothing.)
     depends_on:
       harness:
         condition: service_started
@@ -83,8 +92,8 @@ services:
     restart: unless-stopped
 
 volumes:
-  # Shared data volume: local JSON store + audit log, mounted by both apps.
-  # Maps to DATA_DIR inside the containers. Back it up before upgrades.
+  # Harness data volume: local JSON store + audit log, mounted at /app/data
+  # in the harness container. Back it up before upgrades.
   pharma-data:
     name: trialvigil-data
   ollama-models:
